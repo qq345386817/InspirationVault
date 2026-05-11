@@ -1,3 +1,10 @@
+# Custom
+.browser-profile/
+output/
+.DS_Store
+.chrome-profile/
+vault/
+
 # Logs
 logs
 *.log

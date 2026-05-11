@@ -1,0 +1,22 @@
+{
+  "name": "inspiration-vault-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Collector and vault pipeline for CodePen Spark inspiration items.",
+  "scripts": {
+    "collect:spark": "env -u all_proxy -u http_proxy -u https_proxy node scripts/collect-spark.mjs",
+    "collect:github": "env -u all_proxy -u http_proxy -u https_proxy node scripts/collect-github.mjs",
+    "collect:iosdevweekly": "env -u all_proxy -u http_proxy -u https_proxy node scripts/collect-iosdevweekly.mjs",
+    "collect:uxweekly": "env -u all_proxy -u http_proxy -u https_proxy node scripts/collect-uxweekly.mjs",
+    "collect:fatbobmanweekly": "env -u all_proxy -u http_proxy -u https_proxy node scripts/collect-fatbobmanweekly.mjs",
+    "vault:import": "node scripts/import-export.mjs",
+    "vault:cleanup-weekly": "node scripts/cleanup-weekly-and-finally.mjs",
+    "vault:prepare-enrichment": "node scripts/prepare-enrichment-batch.mjs",
+    "vault:apply-enrichment": "node scripts/apply-enrichment.mjs",
+    "vault:render-gallery": "node scripts/render-gallery.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.54.2"
+  }
+}
