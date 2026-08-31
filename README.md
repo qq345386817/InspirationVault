@@ -91,7 +91,7 @@
 
 ## 展示入口
 
-- [vault/site/index.html](/Users/wangyin/Downloads/CodepenSpark/vault/site/index.html)
+- [vault/site/index.html](vault/site/index.html)
   总入口
 
 source 专属入口见：

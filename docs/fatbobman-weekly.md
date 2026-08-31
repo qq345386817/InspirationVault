@@ -48,16 +48,16 @@ Swift 周报和 Spark / iOS Weekly / UX Weekly 已经完全分开，使用单独
 
 你可以直接说：
 
-- “用 `fatbobmanweekly-enrichment` 处理这次新抓的 Swift 周报数据”
+- 用 `fatbobmanweekly-enrichment` 处理这次新抓的 Swift 周报数据
 
 ## 展示入口
 
-- [vault/site/fatbobman-weekly.html](/Users/wangyin/Downloads/CodepenSpark/vault/site/fatbobman-weekly.html)
+- [vault/site/fatbobman-weekly.html](../vault/site/fatbobman-weekly.html)
   只看 Swift 周报
 
 如果你想看单条卡片原文，去这里：
 
-- [vault/items/fatbobmanweekly](/Users/wangyin/Downloads/CodepenSpark/vault/items/fatbobmanweekly)
+- [vault/items/fatbobmanweekly](../vault/items/fatbobmanweekly)
 
 ## 页面特性
 

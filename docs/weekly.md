@@ -93,16 +93,16 @@ Weekly 数据和 Spark 已经完全分开，使用单独的 skill 与 taxonomy�
 
 你可以直接说：
 
-- “用 `weekly-enrichment` 处理这次新抓的周报数据”
+- 用 `weekly-enrichment` 处理这次新抓的周报数据
 
 ## 展示入口
 
-- [vault/site/weekly.html](/Users/wangyin/Downloads/CodepenSpark/vault/site/weekly.html)
+- [vault/site/weekly.html](../vault/site/weekly.html)
   只看 Weekly 技术周报
 
 如果你想看单条卡片原文，去这里：
 
-- [vault/items/iosdevweekly](/Users/wangyin/Downloads/CodepenSpark/vault/items/iosdevweekly)
+- [vault/items/iosdevweekly](../vault/items/iosdevweekly)
 
 ## 页面特性
 

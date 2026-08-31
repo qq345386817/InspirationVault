@@ -45,16 +45,16 @@ GitHub 项目和 Spark / Weekly / UX Weekly / Swift Weekly 分开处理，使用
 
 你可以直接说：
 
-- “用 `github-enrichment` 处理这次新抓的 GitHub 数据”
+- 用 `github-enrichment` 处理这次新抓的 GitHub 数据
 
 ## 展示入口
 
-- [vault/site/github.html](/Users/wangyin/Downloads/CodepenSpark/vault/site/github.html)
+- [vault/site/github.html](../vault/site/github.html)
   只看 GitHub 项目
 
 如果你想看单条卡片原文，去这里：
 
-- [vault/items/github](/Users/wangyin/Downloads/CodepenSpark/vault/items/github)
+- [vault/items/github](../vault/items/github)
 
 ## 页面特性
 

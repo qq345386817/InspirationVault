@@ -58,16 +58,16 @@ UX 周报和 Spark / iOS Weekly 已经完全分开，使用单独的 skill 与 t
 
 你可以直接说：
 
-- “用 `uxweekly-enrichment` 处理这次新抓的 UX 周报数据”
+- 用 `uxweekly-enrichment` 处理这次新抓的 UX 周报数据
 
 ## 展示入口
 
-- [vault/site/ux-weekly.html](/Users/wangyin/Downloads/CodepenSpark/vault/site/ux-weekly.html)
+- [vault/site/ux-weekly.html](../vault/site/ux-weekly.html)
   只看 UX 周报
 
 如果你想看单条卡片原文，去这里：
 
-- [vault/items/uxweekly](/Users/wangyin/Downloads/CodepenSpark/vault/items/uxweekly)
+- [vault/items/uxweekly](../vault/items/uxweekly)
 
 ## 页面特性
 

@@ -11,7 +11,7 @@
 
 1. 安装 Tampermonkey
 2. 新建脚本
-3. 把 [userscripts/codepen-spark-export.user.js](/Users/wangyin/Downloads/CodepenSpark/userscripts/codepen-spark-export.user.js) 的内容粘进去并保存
+3. 把 [userscripts/codepen-spark-export.user.js](../userscripts/codepen-spark-export.user.js) 的内容粘进去并保存
 
 ### 2. 从 Spark 页面导出 JSON
 
@@ -42,7 +42,7 @@ https://codepen.io/spark/505
 
 把导出的 JSON 放到固定收件箱目录：
 
-- [vault/inbox](/Users/wangyin/Downloads/CodepenSpark/vault/inbox)
+- [vault/inbox](../vault/inbox)
 
 然后直接执行：
 
@@ -52,7 +52,7 @@ npm run vault:import
 
 导入后，再告诉我：
 
-- “用 `inspiration-enrichment` 处理这次新抓的数据”
+- 用 `inspiration-enrichment` 处理这次新抓的数据
 
 我会继续补中文、分类、决策字段，并刷新画廊。
 
@@ -89,12 +89,12 @@ Spark 数据的 enrichment skill 是：
 
 ## 展示入口
 
-- [vault/site/spark.html](/Users/wangyin/Downloads/CodepenSpark/vault/site/spark.html)
+- [vault/site/spark.html](../vault/site/spark.html)
   只看 Spark 灵感
 
 如果你想看单条卡片原文，去这里：
 
-- [vault/items/codepen](/Users/wangyin/Downloads/CodepenSpark/vault/items/codepen)
+- [vault/items/codepen](../vault/items/codepen)
 
 ## 配图策略
 
