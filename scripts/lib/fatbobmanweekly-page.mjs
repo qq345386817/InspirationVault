@@ -15,13 +15,19 @@ export async function extractFatbobmanWeeklyIssue(page) {
       String(value || "")
         .replace(/\s+/g, " ")
         .trim();
+    const slugify = (value) =>
+      normalize(value)
+        .toLowerCase()
+        .replace(/&/g, " and ")
+        .replace(/[^a-z0-9\u4e00-\u9fa5]+/gi, "-")
+        .replace(/^-+|-+$/g, "");
 
     const known = new Map(sectionEntries);
     const ignored = new Set(ignoredEntries);
 
     const root =
-      document.querySelector("main") ||
       document.querySelector("article") ||
+      document.querySelector("main") ||
       document.body;
     const issueHeading = root.querySelector("h1") || document.querySelector("h1");
     const issueMarker = normalize(root.querySelector("p, div")?.textContent || "");
@@ -35,19 +41,18 @@ export async function extractFatbobmanWeeklyIssue(page) {
         ).padStart(2, "0")}`
       : "";
 
-    const allSectionHeadings = Array.from(root.querySelectorAll("h2")).filter((node) =>
-      known.has(normalize(node.textContent || ""))
-    );
+    const allSectionHeadings = Array.from(root.querySelectorAll("h2")).filter((node) => {
+      const name = normalize(node.textContent || "");
+      return Boolean(name) && !ignored.has(name);
+    });
     const excludedSectionNames = Array.from(
       new Set(
-        allSectionHeadings
+        Array.from(root.querySelectorAll("h2"))
           .map((node) => normalize(node.textContent || ""))
           .filter((name) => ignored.has(name))
       )
     );
-    const sectionHeadings = allSectionHeadings.filter(
-      (node) => !ignored.has(normalize(node.textContent || ""))
-    );
+    const sectionHeadings = allSectionHeadings;
 
     const firstSection = allSectionHeadings[0] || null;
     const commentNodes = [];
@@ -72,29 +77,55 @@ export async function extractFatbobmanWeeklyIssue(page) {
       return nodes;
     };
 
+    const sectionMeta = (sectionName, subsectionName = "") => {
+      if (!subsectionName || subsectionName === sectionName) {
+        return {
+          sectionName,
+          sectionSlug: known.get(sectionName) || slugify(sectionName)
+        };
+      }
+
+      return {
+        sectionName: `${sectionName} / ${subsectionName}`,
+        sectionSlug: `${known.get(sectionName) || slugify(sectionName)}-${slugify(
+          subsectionName
+        )}`
+      };
+    };
+
     const splitGroups = (nodes) => {
       const groups = [];
       let current = [];
+      let currentSectionName = "";
+      let currentSectionSlug = "";
       const flush = () => {
         if (current.length) {
-          groups.push(current);
+          groups.push({
+            nodes: current,
+            sectionName: currentSectionName,
+            sectionSlug: currentSectionSlug
+          });
           current = [];
         }
       };
 
-      for (const node of nodes) {
+      for (const { node, sectionName, sectionSlug } of nodes) {
         if (!(node instanceof HTMLElement)) continue;
         if (node.tagName === "HR") {
           flush();
           continue;
         }
         if (node.tagName === "H3" && current.length) flush();
+        if (!current.length) {
+          currentSectionName = sectionName;
+          currentSectionSlug = sectionSlug;
+        }
         current.push(node);
       }
 
       flush();
       return groups.filter((group) =>
-        group.some((node) => node.tagName === "H3" || node.querySelector("a[href]"))
+        group.nodes.some((node) => node.tagName === "H3" || node.querySelector("a[href]"))
       );
     };
 
@@ -133,24 +164,99 @@ export async function extractFatbobmanWeeklyIssue(page) {
       };
     };
 
+    const parseListItem = (node) => {
+      if (!(node instanceof HTMLElement)) return null;
+      const firstParagraph = node.querySelector("p") || node;
+      const strongTitle = firstParagraph.querySelector("strong");
+      const firstAnchor = firstParagraph.querySelector("a[href]");
+      let titleAnchor = firstAnchor;
+      let title = "";
+
+      if (strongTitle && !strongTitle.querySelector("a[href]")) {
+        title = normalize(strongTitle.textContent || "");
+        titleAnchor =
+          Array.from(node.querySelectorAll("a[href]")).find(
+            (anchor) => !firstParagraph.contains(anchor)
+          ) ||
+          firstAnchor ||
+          null;
+      } else if (firstAnchor instanceof HTMLAnchorElement) {
+        title = normalize(firstAnchor.textContent || firstParagraph.textContent || "");
+      }
+
+      if (!(titleAnchor instanceof HTMLAnchorElement)) return null;
+      if (!title) title = normalize(titleAnchor.textContent || "");
+
+      const descriptionNodes = Array.from(node.children).filter(
+        (child) => child !== firstParagraph
+      );
+      const description = normalize(
+        descriptionNodes.length
+          ? descriptionNodes.map((child) => child.textContent || "").join(" ")
+          : node.textContent?.replace(firstParagraph.textContent || "", "") || ""
+      );
+
+      return {
+        title,
+        href: titleAnchor.href,
+        description,
+        text: normalize(node.textContent || "")
+      };
+    };
+
     let positionInIssue = 0;
     const items = [];
 
     for (const heading of sectionHeadings) {
       const sectionName = normalize(heading.textContent || "");
-      const sectionSlug = known.get(sectionName) || "";
-      const groups = splitGroups(collectSectionNodes(heading));
+      let currentSubsectionName = "";
+      const sectionNodes = [];
+
+      for (const node of collectSectionNodes(heading)) {
+        if (!(node instanceof HTMLElement)) continue;
+
+        if (node.tagName === "H3" && !node.querySelector("a[href]")) {
+          currentSubsectionName = normalize(node.textContent || "");
+          continue;
+        }
+
+        const meta = sectionMeta(sectionName, currentSubsectionName);
+
+        if (node.matches("ul, ol")) {
+          for (const listItem of Array.from(node.children).filter(
+            (child) => child instanceof HTMLElement && child.tagName === "LI"
+          )) {
+            const item = parseListItem(listItem);
+            if (!item?.title || !item.href) continue;
+            positionInIssue += 1;
+            const positionInSection =
+              items.filter((existing) => existing.sectionName === meta.sectionName).length + 1;
+            items.push({
+              ...item,
+              ...meta,
+              positionInIssue,
+              positionInSection,
+              sponsored: false
+            });
+          }
+          continue;
+        }
+
+        sectionNodes.push({ node, ...meta });
+      }
+
+      const groups = splitGroups(sectionNodes);
       let positionInSection = 0;
 
       for (const group of groups) {
-        const item = parseGroup(group);
+        const item = parseGroup(group.nodes);
         if (!item?.title || !item.href) continue;
         positionInIssue += 1;
         positionInSection += 1;
         items.push({
           ...item,
-          sectionName,
-          sectionSlug,
+          sectionName: group.sectionName || sectionName,
+          sectionSlug: group.sectionSlug || known.get(sectionName) || slugify(sectionName),
           positionInIssue,
           positionInSection,
           sponsored: false

@@ -83,6 +83,9 @@ export async function extractIosDevWeeklyIssue(page) {
           pushCurrent();
           continue;
         }
+        if (node instanceof HTMLAnchorElement && node.href && current.length) {
+          pushCurrent();
+        }
         if (/^H[34]$/.test(node.tagName) && current.length) {
           pushCurrent();
         }
@@ -95,8 +98,12 @@ export async function extractIosDevWeeklyIssue(page) {
 
     const parseGroup = (group) => {
       const heading = group.find((node) => /^H[34]$/.test(node.tagName));
+      const directAnchor = group.find(
+        (node) => node instanceof HTMLAnchorElement && node.href
+      );
       const titleAnchor =
         heading?.querySelector("a[href]") ||
+        directAnchor ||
         group.map((node) => node.querySelector?.("a[href]")).find(Boolean) ||
         null;
 
@@ -108,7 +115,7 @@ export async function extractIosDevWeeklyIssue(page) {
       const href = titleAnchor.href;
       const description = normalize(
         group
-          .filter((node) => node !== heading)
+          .filter((node) => node !== heading && node !== titleAnchor)
           .map((node) => node.textContent || "")
           .join(" ")
       );
